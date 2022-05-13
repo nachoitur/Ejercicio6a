@@ -1,0 +1,132 @@
+package ui;
+
+import java.util.Scanner;
+import entities.*;
+import logic.Logica;
+
+public class Menu {
+	
+	Scanner s=null;
+	Logica l= new Logica();
+	
+	public void start() {
+		s = new Scanner(System.in);
+		String command;
+		do {
+			command=getCommand();
+			executeCommand(command);
+			System.out.println();
+		}while(!command.equalsIgnoreCase("exit"));
+		s.close();
+	}
+
+	private void executeCommand(String command) {
+		switch (command) {
+		case "list":
+			System.out.println(l.listar());
+			break;
+		case "search":
+			System.out.println((this.buscar()).mostrarDatos());
+			break;
+		case "new":
+			this.nuevo();
+			break;
+		case "delete":
+			this.borrar();
+			break;
+		case "update":
+			this.actualizar();
+			break;
+		default:
+			break;
+		}
+	}
+
+	private String getCommand() {
+		System.out.println("list\t\tListar todos los productos");
+		System.out.println("search\t\tMostrar un producto por id");
+		System.out.println("new\t\tCargar nuevos productos");
+		System.out.println("delete\t\tEliminar un producto");
+		System.out.println("update\t\tModificar un producto");
+		System.out.println();
+		System.out.print("Ingrese la opción que desea realizar: ");
+		return s.nextLine();
+	}
+	
+	private Product buscar() {
+		System.out.println();
+		System.out.print("Ingrese el id a buscar: ");
+		int idABuscar = Integer.parseInt(s.nextLine());
+		System.out.println();
+		return (l.buscar(idABuscar));
+	}
+	
+	private void nuevo() {
+		System.out.println();
+		System.out.println("NUEVO PRODUCTO\n");
+		Product p = new Product();
+		System.out.print("Ingrese el nombre: ");
+		p.setName(s.nextLine());
+		System.out.print("Ingrese la descripcion: ");
+		p.setDescription(s.nextLine());
+		System.out.print("Ingrese el precio: ");
+		p.setPrice(Double.parseDouble(s.nextLine()));
+		System.out.print("Ingrese la cantidad en stock: ");
+		p.setStock(Integer.parseInt(s.nextLine()));
+		System.out.print("Incluye envío S/N: ");
+		if ((s.nextLine()).equalsIgnoreCase("s")) {
+			p.setShippingIncluded(true);
+		}
+		else { p.setShippingIncluded(false);}
+		l.nuevo(p);
+	}
+	
+	private void borrar() {
+		System.out.println();
+		System.out.print("Ingrese el id a borrar: ");
+		int idABorrar = Integer.parseInt(s.nextLine());
+		l.borrar(idABorrar);
+	}
+	
+	private void actualizar(){
+		System.out.println();
+		System.out.print("Ingrese el id a actualizar: ");
+		int idABuscar = Integer.parseInt(s.nextLine());
+		Product p = l.buscar(idABuscar);
+		System.out.println("Producto a modificar:\n   "+p.mostrarDatos());
+		
+		System.out.print("Desea modificar name S/N: ");
+		if ((s.nextLine()).equalsIgnoreCase("s")) {
+			System.out.print("Ingrese nuevo name: ");
+			p.setName(s.nextLine());
+		}
+		
+		System.out.print("Desea modificar description S/N: ");
+		if ((s.nextLine()).equalsIgnoreCase("s")) {
+			System.out.print("Ingrese nuevo description: ");
+			p.setDescription(s.nextLine());
+		}
+		
+		System.out.print("Desea modificar price S/N: ");
+		if ((s.nextLine()).equalsIgnoreCase("s")) {
+			System.out.print("Ingrese nuevo price: ");
+			p.setPrice(Double.parseDouble(s.nextLine()));
+		}
+		
+		System.out.print("Desea modificar stock S/N: ");
+		if ((s.nextLine()).equalsIgnoreCase("s")) {
+			System.out.print("Ingrese nuevo stock: ");
+			p.setStock(Integer.parseInt(s.nextLine()));
+		}
+		
+		System.out.print("Desea modificar shippingIncluded S/N: ");
+		if ((s.nextLine()).equalsIgnoreCase("s")) {
+			if (p.isShippingIncluded()) {
+				p.setShippingIncluded(false);
+			}
+			else { p.setShippingIncluded(true); }
+		}
+		
+		l.actualizar(p);
+	}
+}
