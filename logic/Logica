@@ -1,0 +1,40 @@
+package logic;
+
+import java.util.LinkedList;
+import data.*;
+import entities.*;
+
+public class Logica {
+	
+	private DataProduct dp;
+	
+	public Logica() {
+		dp = new DataProduct();
+	}
+	
+	public LinkedList<Product> listar(){
+		return dp.getAll();
+	}
+
+	public Product buscar(int id) {
+		return dp.getOne(id);
+	}
+	
+	public void nuevo(Product p) {
+		dp.add(p);
+		System.out.println();
+		System.out.println("Carga realizada con éxito!");
+	}
+	
+	public void borrar(int id) {
+		dp.remove(this.buscar(id));
+		System.out.println();
+		System.out.println("Borrado realizado con éxito!");
+	}
+	
+	public void actualizar(Product p) {
+		dp.update(p);
+		System.out.println();
+		System.out.println("Actualizacion realizada con éxito!");
+	}
+}
