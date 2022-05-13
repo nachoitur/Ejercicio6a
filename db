@@ -1,0 +1,15 @@
+CREATE DATABASE `javamarket` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+CREATE TABLE `product` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `description` varchar(45) DEFAULT NULL,
+  `price` double NOT NULL,
+  `stock` int NOT NULL,
+  `shippingIncluded` tinyint NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+drop user if exists 'usuario';
+create user 'usuario' identified by 'contrasena';
+GRANT SELECT, INSERT, UPDATE, DELETE ON `javamarket`.* TO 'usuario';
