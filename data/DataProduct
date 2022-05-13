@@ -1,0 +1,149 @@
+package data;
+import entities.*;
+import java.sql.*;
+import java.util.LinkedList;
+
+public class DataProduct {
+
+	public LinkedList<Product> getAll(){
+		Statement stmt=null;
+		ResultSet rs=null;
+		LinkedList<Product> prods= new LinkedList<>();	
+		try {
+			stmt= DbConnector.getInstancia().getConn().createStatement();
+			rs= stmt.executeQuery("select id,name,price from product");
+			if(rs!=null) {
+				while(rs.next()) {
+					Product p=new Product();
+					p.setId(rs.getInt("id"));
+					p.setName(rs.getString("name"));
+					p.setPrice(rs.getDouble("price"));
+					prods.add(p);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs!=null) {rs.close();}
+				if(stmt!=null) {stmt.close();}
+				DbConnector.getInstancia().releaseConn();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return prods;
+	}
+	
+	public Product getOne(int id) {
+		Product p=null;
+		PreparedStatement stmt=null;
+		ResultSet rs=null;
+		try {
+			stmt=DbConnector.getInstancia().getConn().prepareStatement(
+					"select id,name,description,price,stock,shippingIncluded from product where id=?"
+					);
+			stmt.setInt(1, id);
+			rs=stmt.executeQuery();
+			if(rs!=null && rs.next()) {
+				p=new Product();
+				p.setId(rs.getInt("id"));
+				p.setName(rs.getString("name"));
+				p.setDescription(rs.getString("description"));
+				p.setPrice(rs.getDouble("price"));
+				p.setStock(rs.getInt("stock"));
+				p.setShippingIncluded(rs.getBoolean("shippingIncluded"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(rs!=null) {rs.close();}
+				if(stmt!=null) {stmt.close();}
+				DbConnector.getInstancia().releaseConn();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return p;
+	}
+	
+	public void add(Product p) {
+		PreparedStatement stmt= null;
+		ResultSet keyResultSet=null;
+		try {
+			stmt=DbConnector.getInstancia().getConn().
+					prepareStatement(
+							"insert into product(name, description, price, stock, shippingIncluded) values(?,?,?,?,?)",
+							PreparedStatement.RETURN_GENERATED_KEYS
+							);
+			stmt.setString(1, p.getName());
+			stmt.setString(2, p.getDescription());
+			stmt.setDouble(3, p.getPrice());
+			stmt.setInt(4, p.getStock());
+			stmt.setBoolean(5, p.isShippingIncluded());
+			stmt.executeUpdate();
+			
+			keyResultSet=stmt.getGeneratedKeys();
+            if(keyResultSet!=null && keyResultSet.next()){
+                p.setId(keyResultSet.getInt(1));
+            }
+			
+		}  catch (SQLException e) {
+            e.printStackTrace();
+		} finally {
+            try {
+                if(keyResultSet!=null)keyResultSet.close();
+                if(stmt!=null)stmt.close();
+                DbConnector.getInstancia().releaseConn();
+            } catch (SQLException e) {
+            	e.printStackTrace();
+            }
+		}
+	}
+	
+	public void update(Product p) {
+		PreparedStatement stmt= null;
+		try {
+			stmt=DbConnector.getInstancia().getConn().
+					prepareStatement(
+							"update product set name=?,description=?, price=?, stock=?, shippingIncluded=? where id=?");
+			stmt.setString(1, p.getName());
+			stmt.setString(2, p.getDescription());
+			stmt.setDouble(3, p.getPrice());
+			stmt.setInt(4, p.getStock());
+			stmt.setBoolean(5, p.isShippingIncluded());
+			stmt.setInt(6, p.getId());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+            e.printStackTrace();
+		} finally {
+            try {
+                if(stmt!=null)stmt.close();
+                DbConnector.getInstancia().releaseConn();
+            } catch (SQLException e) {
+            	e.printStackTrace();
+            }
+		}
+	}
+	
+	public void remove(Product p) {
+		PreparedStatement stmt= null;
+		try {
+			stmt=DbConnector.getInstancia().getConn().
+					prepareStatement(
+							"delete from product where id=?");
+			stmt.setInt(1, p.getId());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+            e.printStackTrace();
+		} finally {
+            try {
+                if(stmt!=null)stmt.close();
+                DbConnector.getInstancia().releaseConn();
+            } catch (SQLException e) {
+            	e.printStackTrace();
+            }
+		}
+	}
+}
